@@ -10,7 +10,7 @@ import CoreData
 
 class CoreDataStack {
     static let container: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "PlaylistCoreData")
+        let container = NSPersistentContainer(name: "CharacterBlurb")
         // _ means I don't care
         container.loadPersistentStores(completionHandler: { (_, error) in
             if let error = error {

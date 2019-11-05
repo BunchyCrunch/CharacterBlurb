@@ -10,10 +10,9 @@ import UIKit
 import CoreData
 
 class CharacterListTableViewController: UITableViewController {
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        CharacterController.sharedInstance.fetchedRequestController.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -25,16 +24,14 @@ class CharacterListTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return CharacterController.sharedInstance.fetchedRequestController.sections?[section].numberOfObjects ?? 0
+        return CharacterController.sharedInstance.characters.count
     }
     
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "characterCell", for: indexPath) as? CharacterTableViewCell else { return UITableViewCell() }
-        let character = CharacterController.sharedInstance.fetchedRequestController.object(at: indexPath)
+        let character = CharacterController.sharedInstance.characters[indexPath.row]
         cell.update(withCharacter: character)
-        cell.delegate = self
-        
         
         return cell
     }
@@ -48,17 +45,16 @@ class CharacterListTableViewController: UITableViewController {
      }
      */
     
-    /*
-     // Override to support editing the table view.
-     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-     if editingStyle == .delete {
-     // Delete the row from the data source
-     tableView.deleteRows(at: [indexPath], with: .fade)
-     } else if editingStyle == .insert {
-     // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-     }
-     }
-     */
+    
+    // Override to support editing the table view.
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let character = CharacterController.sharedInstance.characters[indexPath.row]
+            CharacterController.sharedInstance.remove(character: character)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        }
+    }
+    
     
     /*
      // Override to support rearranging the table view.
@@ -75,15 +71,19 @@ class CharacterListTableViewController: UITableViewController {
      }
      */
     
-    /*
+    
      // MARK: - Navigation
      
      // In a storyboard-based application, you will often want to do a little preparation before navigation
      override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destination.
-     // Pass the selected object to the new view controller.
+        if segue.identifier == "toDetailVC" {
+            guard let indexPath = tableView.indexPathForSelectedRow,
+                let destinationVC = segue.destination as? CharacterDetailViewController else { return }
+            
+            let objectToSend = CharacterController.sharedInstance.characters[indexPath.row]
+            destinationVC.character = objectToSend
+        }
      }
-     */
     
 }
 
